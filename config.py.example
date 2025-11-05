@@ -1,0 +1,6 @@
+DB_CONFIG = {
+    "user":"seu_usuario",
+    "password":"sua_senha",
+    "host":"seu_host",
+    "port":seu_port
+}
