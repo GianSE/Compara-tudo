@@ -3,3 +3,5 @@ config.py
 __pycache__
 ultimo_indice.txt
 venv
+lojas_parciais.csv
+notas_parciais.csv
