@@ -65,21 +65,30 @@ def transformar_dados_produtos(produtos_por_valor, produtos_por_qtd):
     logging.info("3. Mesclando as duas bases de dados")
     
     Produtos = pd.merge(produtos_por_qtd, produtos_por_valor, how="inner")
-
     Produtos.drop_duplicates(inplace=True)
     
     # Remove colunas desnecessárias do merge
     Produtos.drop(columns=["valor_total", "qtd_total"], inplace=True, errors='ignore') 
     
-    # Filtra GTINs inválidos
+    # Filtra GTINs inválidos ANTES de normalizar
     Produtos = Produtos[Produtos["GTIN"] != "99999999999999"]
     Produtos = Produtos[Produtos["GTIN"] != "88888888888888"]
     
-    # Aplica o limite
+    # --- LÓGICA DE LIMPEZA CORRIGIDA ---
+    
+    # 1. Normaliza os GTINs para 14 dígitos (como string)
+    #    Removemos .0 se vier de um número
+    Produtos["GTIN"] = Produtos["GTIN"].astype(str)
+    
+    # 2. Dededuplica pela CHAVE PRIMÁRIA (GTIN) PRIMEIRO.
+    #    Isso garante que só temos 1 de cada gtin na lista.
+    Produtos.drop_duplicates(subset=['GTIN'], keep='first', inplace=True)
+    
+    # 3. AGORA sim, pega os 1000 melhores da lista limpa.
     Produtos = Produtos.head(1000)
     
-    # Garante unicidade pelo ID interno antes de carregar
-    Produtos.drop_duplicates(subset=['codigo_interno_produto'], keep='first', inplace=True)
+    print(f"Transformação concluída. Enviando {len(Produtos)} produtos únicos para carga.")
+    logging.info(f"Transformação concluída. Enviando {len(Produtos)} produtos únicos para carga.")
     
     return Produtos
 

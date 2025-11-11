@@ -134,11 +134,6 @@ def insert_produtos_atualizados(DB_CONFIG, produtos_df):
             gtin, id_produto, descricao, fabricante, apresentacao
         )
         VALUES (%s, %s, %s, %s, %s)
-        ON DUPLICATE KEY UPDATE
-            id_produto = VALUES(id_produto),
-            descricao = VALUES(descricao),
-            fabricante = VALUES(fabricante),
-            apresentacao = VALUES(apresentacao);
     """
     
     erros = 0
