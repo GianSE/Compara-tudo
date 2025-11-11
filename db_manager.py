@@ -74,8 +74,7 @@ def fetch_dados_vendas_para_produtos(DB_CONFIG):
         WHERE 
             v.data_venda >= CURDATE() - INTERVAL 90 DAY
         GROUP BY 
-            v.codigo_interno_produto, v.GTIN, v.descricao_produto, 
-            v.apresentacao_produto, v.nome_fantasia_fabricante
+            v.codigo_interno_produto
         ORDER BY valor_total DESC
         LIMIT 2000;
     """
@@ -99,8 +98,7 @@ def fetch_dados_vendas_para_produtos(DB_CONFIG):
         WHERE 
             v.data_venda >= CURDATE() - INTERVAL 90 DAY
         GROUP BY 
-            v.codigo_interno_produto, v.GTIN, v.descricao_produto, 
-            v.apresentacao_produto, v.nome_fantasia_fabricante
+            v.codigo_interno_produto
         ORDER BY qtd_total DESC
         LIMIT 2000;
     """
