@@ -179,7 +179,7 @@ def _obter_lat_lon_google(endereco, index, total, GOOGLE_API_KEY):
     url = "https://maps.googleapis.com/maps/api/geocode/json"
     params = {
         "address": endereco,
-        "key": GOOGLE_API_KEY, # <-- CORREÇÃO
+        "key": GOOGLE_API_KEY,
     }
 
     try:
