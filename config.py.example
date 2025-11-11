@@ -4,3 +4,7 @@ DB_CONFIG = {
     "host":"seu_host",
     "port":seu_port
 }
+
+GOOGLE_API_KEY = "key_google"
+TELEGRAM_TOKEN = "token_telegram"
+TELEGRAM_CHAT_ID = "id_telegram"

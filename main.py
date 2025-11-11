@@ -76,5 +76,5 @@ def main():
             )
 
 if __name__ == "__main__":
-    setup_logging() # Configura o logging ANTES de tudo
+    setup_logging()
     main()
