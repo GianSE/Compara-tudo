@@ -214,15 +214,15 @@ def pegar_geohashs_BD(DB_CONFIG):
             dbDrogamais.bronze_lojas AS b
         JOIN 
             auditorias_filtradas AS a 
-            ON a.userEmail = b.email 
+            -- Força o mesmo collate nos dois lados
+            ON a.userEmail COLLATE utf8mb4_uca1400_ai_ci = b.email COLLATE utf8mb4_uca1400_ai_ci
         JOIN 
             dbDrogamais.bronze_cidades AS p 
-            ON b.cidade = p.cidade_normalizada
+            -- Força o mesmo collate nos dois lados
+            ON b.cidade COLLATE utf8mb4_uca1400_ai_ci = p.cidade_normalizada COLLATE utf8mb4_uca1400_ai_ci
         GROUP BY 
             p.geohash; 
-    """ 
-    # NOTA: Ajustei o JOIN para p.cidade_normalizada e GROUP BY para p.geohash
-    # para garantir que você pegue todos os geohashs corretos, não apenas um por cidade.
+    """
     
     cursor.execute(sql)
     geohash = cursor.fetchall()
