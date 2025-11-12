@@ -203,6 +203,8 @@ O script cuidará do resto, seja iniciando uma nova coleta ou recuperando dados 
 
 <details> <summary>🚨 <strong>error_handler.py</strong></summary> Funções centralizadas para lidar com exceções, salvar CSVs e notificar falhas. </details>
 
+<details> <summary>🏗️ <strong>init_db.py</strong></summary> Script de inicialização. Garante que as tabelas de destino (bronze_menorPreco_*) existam no banco de dados com o esquema e collate corretos. </details>
+
 <details> <summary>🔒 <strong>config.py (e .example)</strong></summary> Armazena as credenciais e chaves de API. </details>
 
 <details> <summary>📦 <strong>requirements.txt</strong></summary> Lista de pacotes Python necessários. </details>
