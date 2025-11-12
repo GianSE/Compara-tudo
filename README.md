@@ -25,69 +25,97 @@ Este é um pipeline de ETL robusto e tolerante a falhas projetado para:
 
 Este projeto é um pipeline de ETL (Extração, Transformação e Carga) completo e resiliente.
 
-* 🧠 **Atualização Inteligente de Produtos:** Periodicamente (a cada 30+ dias), o script reconstrói a lista de 1000 produtos-alvo (`bronze_menorPreco_produtos`). Ele cruza os 2000 produtos mais vendidos por *valor* e *quantidade* da `bronze_plugpharma_vendas` e, em seguida, busca o **GTIN principal** (`codigo_principal = 1`) para cada um na `bronze_plugpharma_produtos`.
+<details> 
+    <summary>🧠 <strong>Atualização Inteligente de Produtos</strong></summary> Periodicamente (a cada 30+ dias), o script reconstrói a lista de 1000 produtos-alvo (<code>bronze_menorPreco_produtos</code>). Ele cruza os 2000 produtos mais vendidos por <i>valor</i> e <i>quantidade</i> da <code>bronze_plugpharma_vendas</code> e, em seguida, busca o <strong>GTIN principal</strong> (<code>codigo_principal = 1</code>) para cada um na <code>bronze_plugpharma_produtos</code>. 
+</details>
 
-* 🔄 **Coleta Rotativa (Batch):** O script não consulta os 1000 produtos de uma vez. Ele divide a lista em lotes de 100 GTINs e processa um lote por execução, continuando de onde parou na execução anterior (lógica gerenciada pelo `ultimo_indice.txt` e `pegar_ultimo_gtin`).
+<details> 
+    <summary>🔄 <strong>Coleta Rotativa (Batch)</strong></summary> 
+    O script não consulta os 1000 produtos de uma vez. Ele divide a lista em lotes de 100 GTINs e processa um lote por execução, continuando de onde parou na execução anterior (lógica gerenciada pelo <code>ultimo_indice.txt</code> e <code>pegar_ultimo_gtin</code>). 
+</details>
 
-* 🎣 **Coleta Ampla de Dados:** Utiliza os GTINs do lote como "isca" na API do Menor Preço. No entanto, ele salva *todos* os produtos que a API retorna na nota fiscal, não apenas o produto-isca. Isso enriquece a tabela `bronze_menorPreco_notas` com uma vasta gama de produtos concorrentes.
+<details> 
+    <summary>🎣 <strong>Coleta Ampla de Dados</strong></summary> 
+    Utiliza os GTINs do lote como "isca" na API do Menor Preço. No entanto, ele salva <i>todos</i> os produtos que a API retorna na nota fiscal, não apenas o produto-isca. Isso enriquece a tabela <code>bronze_menorPreco_notas</code> com uma vasta gama de produtos concorrentes. 
+</details>
 
-* 🗺️ **Geocodificação de Novas Lojas:** Ao encontrar uma loja (`id_loja`) não cadastrada na `bronze_menorPreco_lojas`, o script utiliza a API do Google Geocoding para buscar suas coordenadas de latitude e longitude antes de salvá-la.
+<details> 
+    <summary>🗺️ <strong>Geocodificação de Novas Lojas</strong></summary> 
+    Ao encontrar uma loja (<code>id_loja</code>) não cadastrada na <code>bronze_menorPreco_lojas</code>, o script utiliza a API do Google Geocoding para buscar suas coordenadas de latitude e longitude antes de salvá-la. 
+</details>
 
-* 🛡️ **Tolerância a Falhas (Banco de Dados):** Se a inserção final no banco de dados falhar (ex: perda de conexão), o `handle_execution_error` é acionado. Ele salva *todos* os dados coletados (notas e lojas) em arquivos `.csv` locais (`notas_parciais.csv`, `lojas_parciais.csv`).
+<details> 
+    <summary>🛡️ <strong>Tolerância a Falhas (Banco de Dados)</strong></summary> 
+    Se a inserção final no banco de dados falhar (ex: perda de conexão), o <code>handle_execution_error</code> é acionado. Ele salva <i>todos</i> os dados coletados (notas e lojas) em arquivos <code>.csv</code> locais (<code>notas_parciais.csv</code>, <code>lojas_parciais.csv</code>). 
+</details>
 
-* 🔁 **Recuperação Automática:** Na próxima execução, o `main.py` detecta esses arquivos `.csv`. Ele primeiro executa o `run_recovery_flow`, que carrega os dados desses CSVs no banco de dados e depois os apaga, garantindo que nenhum dado seja perdido antes de iniciar uma nova coleta.
+<details> 
+    <summary>🔁 <strong>Recuperação Automática</strong></summary> 
+    Na próxima execução, o <code>main.py</code> detecta esses arquivos <code>.csv</code>. Ele primeiro executa o <code>run_recovery_flow</code>, que carrega os dados desses CSVs no banco de dados e depois os apaga, garantindo que nenhum dado seja perdido antes de iniciar uma nova coleta. 
+</details>
 
-* 🔔 **Monitoramento e Notificações:** Envia mensagens de sucesso ou erro para um chat do Telegram, permitindo o monitoramento remoto da execução.
+<details> 
+    <summary>🔔 <strong>Monitoramento e Notificações</strong></summary> 
+    Envia mensagens de sucesso ou erro para um chat do Telegram, permitindo o monitoramento remoto da execução. 
+</details>
 
 ---
 
 ## 🚀 Como Usar
 
-### 1. 📋 Pré-requisitos
+<details> 
+    <summary><strong>1. 📋 Pré-requisitos</strong></summary>
 
-Garanta que você tenha um banco de dados MariaDB acessível. O script espera se conectar a um banco chamado `dbDrogamais`.
+Garanta que você tenha um banco de dados MariaDB acessível. O script espera se conectar a um banco chamado <code>dbDrogamais</code>.
 
 Você precisará das seguintes tabelas (fontes e destino):
-* `bronze_plugpharma_vendas` (para análise de vendas)
-* `bronze_plugpharma_produtos` (para buscar GTINs principais)
-* `bronze_cidades` (para buscar geohashs)
-* `dbSults.tb_report_auditoria_embedded` (para filtrar geohashs)
-* `bronze_menorPreco_produtos` (destino da lista de 1000 produtos)
-* `bronze_menorPreco_notas` (destino dos dados brutos da API)
-* `bronze_menorPreco_lojas` (destino das lojas concorrentes)
 
-### 2. 💻 Instalação
+<ul> 
+    <li><code>bronze_plugpharma_vendas</code> (para análise de vendas)</li> 
+    <li><code>bronze_plugpharma_produtos</code> (para buscar GTINs principais)</li> 
+    <li><code>bronze_cidades</code> (para buscar geohashs)</li> 
+    <li><code>dbSults.tb_report_auditoria_embedded</code> (para filtrar geohashs)</li> 
+    <li><code>bronze_menorPreco_produtos</code> (destino da lista de 1000 produtos)</li> 
+    <li><code>bronze_menorPreco_notas</code> (destino dos dados brutos da API)</li> 
+    <li><code>bronze_menorPreco_lojas</code> (destino das lojas concorrentes)</li> 
+</ul> 
+
+</details>
+
+<details>
+    <summary><strong>2. 💻 Instalação</strong></summary>
 
 Clone o repositório e instale as dependências do Python:
 
 ```bash
 pip install -r requirements.txt
 ```
----------------
-### 3. 🔑 Configuração
 
-O script usa um arquivo config.py para armazenar suas chaves e senhas. Este arquivo é ignorado pelo Git.
+</details>
 
-* 1. Copie o arquivo de exemplo:
+<details> <summary><strong>3. 🔑 Configuração</strong></summary>
+
+O script usa um arquivo <code>config.py</code> para armazenar suas chaves e senhas. Este arquivo é ignorado pelo Git.
+
+Copie o arquivo de exemplo (use <code>copy</code> no Windows ou <code>cp</code> no Linux/Mac):
 ```bash
 copy config.py.example config.py
 ```
+Abra o <code>config.py</code> e preencha as variáveis com suas credenciais:
 
-* 2. Abra o config.py e preencha as variáveis com suas credenciais:
+<ul>
+    <li><strong><code>DB_CONFIG</code></strong>: Dicionário com <code>user</code>, <code>password</code>, <code>host</code> e <code>port</code> do seu MariaDB.</li> 
+    <li><strong><code>GOOGLE_API_KEY</code></strong>: Sua chave da API do Google Cloud (para o Geocoding).</li> 
+    <li><strong><code>TELEGRAM_TOKEN</code></strong>: O token do seu Bot do Telegram.</li> 
+    <li><strong><code>TELEGRAM_CHAT_ID</code></strong>: O ID do chat para onde as notificações serão enviadas.</li> 
+</ul>
 
-`DB_CONFIG`: Dicionário com user, password, host e port do seu MariaDB.
+</details>
 
-`GOOGLE_API_KEY`: Sua chave da API do Google Cloud (para o Geocoding).
+<details> 
+    <summary><strong>4. ▶️ Execução</strong></summary>
 
-`TELEGRAM_TOKEN`: O token do seu Bot do Telegram.
-
-`TELEGRAM_CHAT_ID`: O ID do chat para onde as notificações serão enviadas.
-
-----------------------
-
-### 4. ▶️ Execução
-
-Uma vez configurado, basta executar o `main.py`:
+Uma vez configurado, basta executar o <code>main.py</code>:
 
 ```bash
 python main.py
@@ -95,69 +123,88 @@ python main.py
 
 O script cuidará do resto, seja iniciando uma nova coleta ou recuperando dados de uma execução anterior com falha.
 
+</details>
+
+---
+
 ## 📊 Fluxo de Execução
 
-### 1. main.py é iniciado.
+<details>
+    <summary><strong>1. main.py</strong></summary>
+    <ul>
+        <li>Inicio da orquestração</li>
+    </ul>
+</details>
 
-### 2. Verifica Falha Anterior: O script procura pelo arquivo notas_parciais.csv.
+<details>
+    <summary><strong>2. Verifica Falha Anterior</strong></summary>
+    <ul>
+        <li>O script procura pelo arquivo notas_parciais.csv.</li>
+    </ul>
+</details>
 
-### 3. Fluxo de Recuperação (Se .csv existe):
+<details> 
+    <summary><strong>3. Fluxo de Recuperação (Se .csv existe)</strong></summary> 
+    <ul> 
+        <li><code>flow.run_recovery_flow</code> é chamado.</li> 
+        <li>Os dados dos arquivos .csv são lidos e inseridos no banco de dados.</li> 
+        <li>Os arquivos .csv são removidos após o sucesso da carga.</li> 
+    </ul> 
+</details>
 
-    flow.run_recovery_flow é chamado.
+<details> 
+    <summary><strong>4. Fluxo Normal (Se .csv não existe)</strong></summary> 
+    <ul> 
+        <li><code>flow.run_normal_flow</code> é chamado.</li> 
+        <li><strong>[E] Extração:</strong> 
+            <ul> 
+                <li>(Opcional) Atualiza a lista de 1000 produtos-alvo se tiver > 30 dias.</li> 
+                <li>Seleciona o lote de 100 GTINs do dia.</li> 
+                <li>Gera a lista de consultas (Geohash x GTIN).</li> 
+            </ul> 
+        </li> 
+        <li><strong>[T] Transformação (Coleta):</strong> 
+            <ul> 
+                <li><code>api_services.buscar_notas</code> coleta os dados da API do Menor Preço.</li> 
+                <li>Retorna os DataFrames <code>Notas_geral</code> e <code>Lojas_SC_geral</code> para o <code>main.py</code>.</li> 
+            </ul> 
+        </li> 
+        <li><strong>[L] Carga:</strong> 
+            <ul> 
+                <li><code>main.py</code> recebe os DataFrames.</li> 
+                <li>(Opcional) <code>api_services.buscar_lat_lon_lojas_sc</code> enriquece <code>Lojas_SC_geral</code> com Lat/Lon do Google.</li> 
+                <li><code>db_manager.inserir_lojas_sc</code> e <code>db_manager.inserir_notas</code> carregam os dados no MariaDB.</li> 
+            </ul> 
+        </li> 
+    </ul> 
+</details>
 
-    Os dados dos arquivos .csv são lidos e inseridos no banco de dados.
+<details> 
+    <summary><strong>5. Finalização</strong></summary> 
+    <ul> 
+        <li><strong>Sucesso:</strong> <code>handle_success</code> limpa o <code>ultimo_indice.txt</code> e envia notificação de sucesso via Telegram.</li> 
+        <li><strong>Falha (Ex: DB Offline):</strong> <code>handle_execution_error</code> é chamado, <code>save_partial_data</code> cria os arquivos .csv para a próxima execução e envia notificação de erro.</li> 
+    </ul> 
+</details>
 
-    Os arquivos .csv são removidos após o sucesso da carga.
-
-### 4. Fluxo Normal (Se .csv não existe):
-
-    ow.run_normal_flow é chamado.
-
-*   **[E] Extração:**
-
-    (Opcional) Atualiza a lista de 1000 produtos-alvo se tiver > 30 dias.
-
-    Seleciona o lote de 100 GTINs do dia.
-
-    Gera a lista de consultas (Geohash x GTIN).
-
-* **[T] Transformação (Coleta):**
-
-    api_services.buscar_notas coleta os dados da API do Menor Preço.
-
-    Retorna os DataFrames Notas_geral e Lojas_SC_geral para o main.py.
-
-* **[L] Carga:**
-
-    main.py recebe os DataFrames.
-
-    (Opcional) api_services.buscar_lat_lon_lojas_sc enriquece Lojas_SC_geral com Lat/Lon do Google.
-
-    db_manager.inserir_lojas_sc e db_manager.inserir_notas carregam os dados no MariaDB.
-
-### 5. Finalização
-
-    Sucesso: handle_success limpa o ultimo_indice.txt e envia notificação de sucesso via Telegram.
-
-    Falha (Ex: DB Offline): handle_execution_error é chamado, save_partial_data cria os arquivos .csv para a próxima execução (Passo 2) e envia notificação de erro.
-
+---
 
 ## 📂 Estrutura do Projeto
 
-*   `main.py`: 🚦 Ponto de entrada. Orquestra os fluxos (normal vs. recuperação) e a etapa de Carga (Load).
+<details> <summary>🚦 <strong>main.py</strong></summary> Ponto de entrada. Orquestra os fluxos (normal vs. recuperação) e a etapa de Carga (Load). </details>
 
-*   `flow.py`: 🏃‍♂️ Contém a lógica de negócio principal para run_normal_flow (Extração e Transformação) e run_recovery_flow (Carga de CSVs).
+<details> <summary>🏃‍♂️ <strong>flow.py</strong></summary> Contém a lógica de negócio principal para <code>run_normal_flow</code> (Extração e Transformação) e <code>run_recovery_flow</code> (Carga de CSVs). </details>
 
-*   `db_manager.py`: 🗃️ Abstrai toda a comunicação com o banco de dados MariaDB. Contém todas as queries SQL (SELECTs e INSERTs).
+<details> <summary>🗃️ <strong>db_manager.py</strong></summary> Abstrai toda a comunicação com o banco de dados MariaDB. Contém todas as queries SQL (SELECTs e INSERTs). </details>
 
-*   `api_services.py`: ☁️ Gerencia todas as chamadas para APIs externas (Nota Paraná, Google Geocoding e Telegram).
+<details> <summary>☁️ <strong>api_services.py</strong></summary> Gerencia todas as chamadas para APIs externas (Nota Paraná, Google Geocoding e Telegram). </details>
 
-*   `etl_utils.py`: 🛠️ Funções auxiliares de transformação de dados (lógica de Pandas), gerenciamento de estado (leitura/escrita do ultimo_indice.txt) e configuração de logging.
+<details> <summary>🛠️ <strong>etl_utils.py</strong></summary> Funções auxiliares de transformação de dados (Pandas), gerenciamento de estado (leitura/escrita do <code>ultimo_indice.txt</code>) e configuração de logging. </details>
 
-*   `error_handler.py`: 🚨 Funções centralizadas para lidar com exceções, salvar dados parciais em CSV e notificar falhas.
+<details> <summary>🚨 <strong>error_handler.py</strong></summary> Funções centralizadas para lidar com exceções, salvar CSVs e notificar falhas. </details>
 
-*   `config.py` (e `.example`): 🔒 Armazena as credenciais e chaves de API.
+<details> <summary>🔒 <strong>config.py (e .example)</strong></summary> Armazena as credenciais e chaves de API. </details>
 
-*   `requirements.txt`: 📦 Lista de pacotes Python necessários.
+<details> <summary>📦 <strong>requirements.txt</strong></summary> Lista de pacotes Python necessários. </details>
 
-*   `.gitignore`: 🙈 Define os arquivos que não devem ser versionados (logs, config.py, arquivos .csv, etc.).
+<details> <summary>🙈 <strong>.gitignore</strong></summary> Define os arquivos que não devem ser versionados (logs, config.py, arquivos .csv, etc.). </details>
