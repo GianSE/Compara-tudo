@@ -8,7 +8,7 @@ O script foi desenvolvido para coletar dados de preços de concorrentes com base
 
 * [Principais Funcionalidades](#-principais-funcionalidades)
 * [Como Usar](#-como-usar)
-* [Scripts Utilitários](#scripts-utilitarios)
+* [Scripts Utilitários](#-scripts-utilitarios)
 * [Fluxo de Execução](#-fluxo-de-execução)
 * [Estrutura do Projeto](#-estrutura-do-projeto)
 
@@ -21,6 +21,8 @@ Este é um pipeline de ETL robusto e tolerante a falhas projetado para:
 *   Enriquecer os dados com geocodificação de lojas (Google API) e notificações (Telegram).
 
 *   Carregar os dados em um banco MariaDB, com lógica de recuperação automática em caso de falha.
+
+---
 
 ## ✨ Principais Funcionalidades
 
@@ -141,7 +143,7 @@ O script cuidará do resto, seja iniciando uma nova coleta ou recuperando dados 
 
 ---
 
-## 🛠️ Scripts Utilitários
+## 🛠️ Scripts Utilitarios
 
 A pasta utils/ contém scripts para administrar, fazer backup e etc no banco de dados.
 
