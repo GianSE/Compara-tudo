@@ -4,8 +4,8 @@ import logging
 import pandas as pd
 
 # É preciso importar o mandarMSG aqui, pois este módulo é responsável por notificar
-from api_services import mandarMSG 
-from etl_utils import finalizar_indice # Precisamos disso para o handle_success
+from MP_Feeder.api_services import mandarMSG 
+from MP_Feeder.etl_utils import finalizar_indice # Precisamos disso para o handle_success
 
 def save_partial_data(Notas_geral, Lojas_SC_geral, indice_para_salvar):
     """

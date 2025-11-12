@@ -4,15 +4,15 @@ import logging
 import pandas as pd
 
 # Importa as ferramentas de cada módulo
-from db_manager import (
+from MP_Feeder.db_manager import (
     pegar_ultima_att_gtins, fetch_dados_vendas_para_produtos, 
     insert_produtos_atualizados, pegar_geohashs_BD,
     coletar_produtos_no_banco, pegar_ultimo_gtin, coletar_lojas_do_banco,
     inserir_lojas_sc, inserir_notas,
     fetch_gtins_principais
 )
-from api_services import buscar_notas, buscar_lat_lon_lojas_sc
-from etl_utils import (
+from MP_Feeder.api_services import buscar_notas, buscar_lat_lon_lojas_sc
+from MP_Feeder.etl_utils import (
     recuperar_ultimo_indice, transformar_dados_produtos,
     grupo_eans_selecionados, gerar_consultas
 )

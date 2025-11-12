@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS bronze_menorPreco_lojas (
 
 SQL_CREATE_NOTAS = """
 CREATE TABLE IF NOT EXISTS bronze_menorPreco_notas (
-    id BIGINT(20) NOT NULL DEFAULT '0'
+    id BIGINT(20) NOT NULL AUTO_INCREMENT,
     id_nota VARCHAR(120)
     date DATETIME,
     id_loja VARCHAR(50),

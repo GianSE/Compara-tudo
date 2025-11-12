@@ -8,12 +8,11 @@ import pandas as pd
 from config import DB_CONFIG, GOOGLE_API_KEY, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
 
 # Importa os módulos de execução
-from flow import run_recovery_flow, run_normal_flow
-from error_handler import handle_execution_error, handle_api_fail, handle_success
-from etl_utils import setup_logging
-# --- MUDANÇA: Precisamos das funções de inserir e API aqui agora ---
-from db_manager import inserir_lojas_sc, inserir_notas
-from api_services import buscar_lat_lon_lojas_sc
+from MP_Feeder.flow import run_recovery_flow, run_normal_flow
+from MP_Feeder.error_handler import handle_execution_error, handle_api_fail, handle_success
+from MP_Feeder.etl_utils import setup_logging
+from MP_Feeder.db_manager import inserir_lojas_sc, inserir_notas
+from MP_Feeder.api_services import buscar_lat_lon_lojas_sc
 
 def main():
     # --- CONFIGURAÇÕES DE EXECUÇÃO ---
