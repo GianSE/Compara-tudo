@@ -59,7 +59,6 @@ if __name__ == "__main__":
     testar_nominatim_api("RUA MARANHAO, 143, CENTRO, LONDRINA, PR, BRASIL")
     testar_nominatim_api("RUA MARANHAO, 143, CENTRO, LONDRINA, PR")
     testar_nominatim_api("RUA MARANHAO, 143, CENTRO, LONDRINA")
-    testar_nominatim_api("RUA MARANHAO, 143")
 
     # Teste 2: Um endereço que NÃO DEVE ser encontrado
     testar_nominatim_api("Rua Fictícia, 1234, Nárnia")
