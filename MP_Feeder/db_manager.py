@@ -317,8 +317,8 @@ def inserir_lojas_sc(Lojas_SC, now_obj, DB_CONFIG):
     (ETL - Load) Insere um DataFrame de lojas novas (sem cadastro) no banco.
     Usa INSERT IGNORE para evitar falhas com duplicatas.
     """
-    print("##### INSERINDO LOJAS NÃO CADASTRADAS (MODO OTIMIZADO) #####")
-    logging.info("##### INSERINDO LOJAS NÃO CADASTRADAS (MODO OTIMIZADO) #####")
+    print("##### INSERINDO LOJAS NÃO CADASTRADAS #####")
+    logging.info("##### INSERINDO LOJAS NÃO CADASTRADAS #####")
     
     if Lojas_SC.empty:
         print("##### NENHUMA LOJA NOVA PARA INSERIR. #####")
@@ -332,15 +332,17 @@ def inserir_lojas_sc(Lojas_SC, now_obj, DB_CONFIG):
     data_tuples = [
         (
             row.id_loja, row.nome_fantasia, row.razao_social, row.logradouro,
-            row.Latitude, row.Longitude, row.geohash, now_obj
+            row.Latitude, row.Longitude, 
+            row.cidade,
+            row.geohash, now_obj
         )
         for row in Lojas_SC.itertuples(index=False)
     ]
 
     sql = """
         INSERT IGNORE INTO bronze_menorPreco_lojas
-        (id_loja, nome_fantasia, razao_social, logradouro, latitude, longitude ,geohash, data_atualizacao)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        (id_loja, nome_fantasia, razao_social, logradouro, latitude, longitude, cidade, geohash, data_atualizacao)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
     try:
