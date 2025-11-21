@@ -340,9 +340,11 @@ def inserir_lojas_sc(Lojas_SC, now_obj, DB_CONFIG):
     ]
 
     sql = """
-        INSERT IGNORE INTO bronze_menorPreco_lojas
-        (id_loja, nome_fantasia, razao_social, logradouro, latitude, longitude, cidade, geohash, data_atualizacao)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO bronze_menorPreco_notas 
+        (id_nota, date, id_loja, geohash, gtin, descricao, valor_desconto, valor_tabela, valor, cidade, data_atualizacao)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE
+            data_atualizacao = VALUES(data_atualizacao);
     """
 
     try:
@@ -372,14 +374,17 @@ def inserir_lojas_sc(Lojas_SC, now_obj, DB_CONFIG):
 
 def pegar_ultimo_gtin(DB_CONFIG):
     """
-    Pega o GTIN da última nota fiscal inserida, para lógica de rotação de grupos.
+    Pega o GTIN da última nota fiscal PROCESSADA (data_atualizacao),
+    para garantir a rotação correta dos grupos.
     """
-    print("##### COLETANDO ÚLTIMO GTIN INSERIDO #####")
-    logging.info("##### COLETANDO ÚLTIMO GTIN INSERIDO #####")
+    print("##### COLETANDO ÚLTIMO GTIN INSERIDO/ATUALIZADO #####")
+    logging.info("##### COLETANDO ÚLTIMO GTIN INSERIDO/ATUALIZADO #####")
 
     conn = _conectar_db(DB_CONFIG)
     cursor = conn.cursor()
-    sql = "SELECT gtin FROM bronze_menorPreco_notas ORDER BY date DESC LIMIT 1"
+    
+    # ALTERAÇÃO AQUI: Mudamos de 'ORDER BY date' para 'ORDER BY data_atualizacao'
+    sql = "SELECT gtin FROM bronze_menorPreco_notas ORDER BY data_atualizacao DESC LIMIT 1"
     
     cursor.execute(sql)
     dados = cursor.fetchone()
