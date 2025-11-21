@@ -340,9 +340,9 @@ def inserir_lojas_sc(Lojas_SC, now_obj, DB_CONFIG):
     ]
 
     sql = """
-        INSERT INTO bronze_menorPreco_notas 
-        (id_nota, date, id_loja, geohash, gtin, descricao, valor_desconto, valor_tabela, valor, cidade, data_atualizacao)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO bronze_menorPreco_lojas
+        (id_loja, nome_fantasia, razao_social, logradouro, latitude, longitude, cidade, geohash, data_atualizacao)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON DUPLICATE KEY UPDATE
             data_atualizacao = VALUES(data_atualizacao);
     """

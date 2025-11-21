@@ -17,8 +17,6 @@ from MP_Feeder.api_services import buscar_lat_lon_lojas_sc_nominatim
 def main():
     # --- CONFIGURAÇÕES DE EXECUÇÃO ---
     gmt_menos_3 = timezone(timedelta(hours=-3))
-    now_gmt3 = datetime.now(gmt_menos_3)
-    today_gmt3 = now_gmt3.date()
     
     # Agrupa todas as configs
     configs = {
@@ -32,6 +30,8 @@ def main():
     
     # --- LOOP PRINCIPAL DE EXECUÇÃO ---
     while True:
+        now_gmt3 = datetime.now(gmt_menos_3)
+        today_gmt3 = now_gmt3.date()
         Notas_geral = pd.DataFrame()
         Lojas_SC_geral = pd.DataFrame()
         run_completo = False
