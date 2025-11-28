@@ -135,8 +135,10 @@ def insert_produtos_atualizados(DB_CONFIG, produtos_df):
     sucessos = 0
     for _, row in produtos_df.iterrows():
         try:
+            gtin_normalizado = str(row["GTIN"]).zfill(14)
+
             cursor.execute(sql, (
-                row["GTIN"], 
+                gtin_normalizado, 
                 row["codigo_interno_produto"], 
                 row["descricao_produto"], 
                 row["nome_fantasia_fabricante"], 
