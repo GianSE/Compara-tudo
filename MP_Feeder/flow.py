@@ -9,7 +9,8 @@ from MP_Feeder.db_manager import (
     insert_produtos_atualizados, pegar_geohashs_BD,
     coletar_produtos_no_banco, pegar_ultimo_gtin, coletar_lojas_do_banco,
     inserir_lojas_sc, inserir_notas,
-    fetch_gtins_principais
+    fetch_gtins_principais,
+    atualizar_fabricantes_via_iqvia
 )
 from MP_Feeder.api_services import buscar_notas, buscar_lat_lon_lojas_sc_nominatim
 from MP_Feeder.etl_utils import (
@@ -139,6 +140,9 @@ def run_normal_flow(configs, now_gmt3, today_gmt3):
 
             # Envia para o insert (agora incremental)
             insert_produtos_atualizados(DB_CONFIG, Produtos_limpos)
+
+            # Após inserir os dados "crus" do PlugPharma, rodamos o update do IQVIA
+            atualizar_fabricantes_via_iqvia(DB_CONFIG)
         
     else:
         print("##### LISTA DE PRODUTOS ATUALIZADA RECENTEMENTE. PULANDO ATUALIZAÇÃO. #####")
@@ -160,9 +164,6 @@ def run_normal_flow(configs, now_gmt3, today_gmt3):
         Consultas, Lojas, ultimo_indice, arquivo_indice,
         TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
     )
-    
-    # --- MUDANÇA: REMOVIDA A ETAPA DE CARGA (VIII e IX) ---
-    # Os DataFrames agora são apenas retornados
     
     # Retorna o estado da execução para o 'main' decidir o que fazer
     return Notas_geral, Lojas_SC_geral, run_completo, indice_para_salvar

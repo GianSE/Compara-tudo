@@ -221,6 +221,51 @@ def fetch_gtins_principais(DB_CONFIG, codigos_internos_list):
         cursor.close()
         conn.close()
 
+def atualizar_fabricantes_via_iqvia(DB_CONFIG):
+    """
+    Atualiza o campo 'fabricante' na tabela bronze_menorPreco_produtos
+    usando a tabela bronze_iqvia_cpp como fonte prioritária.
+    Mantém o dado original se não houver correspondência no IQVIA.
+    """
+    print("##### 🧬 ENRIQUECENDO FABRICANTES COM BASE IQVIA #####")
+    logging.info("##### ENRIQUECENDO FABRICANTES COM BASE IQVIA #####")
+
+    conn = _conectar_db(DB_CONFIG)
+    cursor = conn.cursor()
+
+    # O SQL fornecido, ajustado para garantir unicidade no GROUP BY
+    sql = """
+    UPDATE bronze_menorPreco_produtos mp
+    INNER JOIN (
+        SELECT 
+            LPAD(EAN, 14, '0') AS gtin_normalizado,
+            MAX(fabricante) AS fabricante_iqvia
+        FROM bronze_iqvia_cpp
+        WHERE EAN IS NOT NULL
+        GROUP BY LPAD(EAN, 14, '0')
+    ) iq
+    ON mp.gtin = iq.gtin_normalizado
+    SET mp.fabricante = iq.fabricante_iqvia
+    WHERE iq.fabricante_iqvia IS NOT NULL 
+      AND iq.fabricante_iqvia <> '';
+    """
+
+    try:
+        start_time = time.time()
+        cursor.execute(sql)
+        conn.commit()
+        end_time = time.time()
+        
+        print(f"✅ Fabricantes atualizados via IQVIA. Linhas afetadas: {cursor.rowcount}")
+        logging.info(f"Fabricantes atualizados via IQVIA. Linhas afetadas: {cursor.rowcount}. Tempo: {end_time - start_time:.2f}s")
+        
+    except Exception as e:
+        print(f"❌ Erro ao atualizar fabricantes via IQVIA: {e}")
+        logging.error(f"Erro ao atualizar fabricantes via IQVIA: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
 # ============================================
 # SEÇÃO DE LOJAS E GEOHASH
 # ============================================
