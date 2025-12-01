@@ -141,8 +141,11 @@ def run_normal_flow(configs, now_gmt3, today_gmt3):
             # Envia para o insert (agora incremental)
             insert_produtos_atualizados(DB_CONFIG, Produtos_limpos)
 
-            # Após inserir os dados "crus" do PlugPharma, rodamos o update do IQVIA
-            atualizar_fabricantes_via_iqvia(DB_CONFIG)
+            # 1. Cria a lista de GTINs que acabaram de ser processados
+            lista_gtins = Produtos_limpos["GTIN"].unique().tolist()
+
+            # 2. Passa a lista para a função
+            atualizar_fabricantes_via_iqvia(DB_CONFIG, lista_gtins)
         
     else:
         print("##### LISTA DE PRODUTOS ATUALIZADA RECENTEMENTE. PULANDO ATUALIZAÇÃO. #####")
