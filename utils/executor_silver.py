@@ -24,8 +24,8 @@ def rodar_procedure_silver():
 
     try:
         # 1. Conectar ao banco
-        print("Conectando ao banco de dados 'dbDrogamais'...")
-        conn = mariadb.connect(**DB_CONFIG, database="dbDrogamais")
+        print("Conectando ao banco de dados ...")
+        conn = mariadb.connect(**DB_CONFIG)
         # Aumenta o timeout padrão de escrita, pois a procedure pode demorar
         conn.write_timeout = 300 # 5 minutos
         

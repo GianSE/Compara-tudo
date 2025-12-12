@@ -17,7 +17,7 @@ except ImportError:
     sys.exit(1)
 
 def conectar_db():
-    return mariadb.connect(**DB_CONFIG, database="dbDrogamais")
+    return mariadb.connect(**DB_CONFIG)
 
 def buscar_lat_lon_nominatim(endereco):
     """

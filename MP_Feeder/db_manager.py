@@ -8,7 +8,7 @@ from datetime import datetime, date
 # --- FUNÇÃO DE CONEXÃO AUXILIAR ---
 def _conectar_db(DB_CONFIG):
     """Função auxiliar interna para abrir conexão com o DB correto."""
-    return mdb.connect(**DB_CONFIG, database="dbDrogamais")
+    return mdb.connect(**DB_CONFIG)
 
 # ============================================
 # SEÇÃO DE PRODUTOS
@@ -297,13 +297,13 @@ def pegar_geohashs_BD(DB_CONFIG):
         SELECT 
             p.geohash
         FROM 
-            dbDrogamais.bronze_lojas AS b
+            bronze_lojas AS b
         JOIN 
             auditorias_filtradas AS a 
             -- Força o mesmo collate nos dois lados
             ON a.userEmail COLLATE utf8mb4_uca1400_ai_ci = b.email COLLATE utf8mb4_uca1400_ai_ci
         JOIN 
-            dbDrogamais.bronze_cidades AS p 
+            bronze_cidades AS p 
             -- Força o mesmo collate nos dois lados
             ON b.cidade COLLATE utf8mb4_uca1400_ai_ci = p.cidade_normalizada COLLATE utf8mb4_uca1400_ai_ci
         GROUP BY 
@@ -482,3 +482,55 @@ def inserir_notas(Notas, now_obj, DB_CONFIG):
     finally:
         cursor.close()
         conn.close()
+
+# ============================================
+# SEÇÃO DE PRODUTOS INICIAIS (SETUP MANUAL)
+# ============================================
+
+def insert_produtos_manuais(DB_CONFIG, produtos_list: list):
+    """
+    Função auxiliar para inserir uma lista inicial de produtos manualmente.
+    Usada apenas para a primeira carga.
+    """
+    if not produtos_list: return
+
+    logging.info(f"4. Inserindo {len(produtos_list)} produtos manuais...")
+    
+    # Usa a função de conexão existente (garantindo que o config.py esteja correto)
+    conn = _conectar_db(DB_CONFIG)
+    cursor = conn.cursor()
+    
+    agora = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    sql = """
+        INSERT INTO bronze_menorPreco_produtos 
+        (gtin, id_produto, descricao, fabricante, apresentacao, tipo, data_insercao)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+    """
+    
+    sucessos = 0
+    for produto in produtos_list:
+        try:
+            gtin_normalizado = str(produto["gtin"]).zfill(14)
+
+            # Note que a coluna 'id_produto' é uma chave primária composta
+            # Usamos o próprio GTIN como ID temporário para simplificar a injeção
+            cursor.execute(sql, (
+                gtin_normalizado, 
+                produto.get("id_produto", gtin_normalizado), # Usa GTIN se não tiver ID
+                produto["descricao"], 
+                produto.get("fabricante", "NÃO INFORMADO"), 
+                produto.get("apresentacao", "NÃO INFORMADA"),
+                produto.get("tipo", "NA"),
+                agora
+            ))
+            sucessos += 1
+        except Exception as e:
+            # Erros comuns: chave duplicada (se o GTIN já estiver lá)
+            logging.error(f"Erro ao inserir GTIN {produto['gtin']} manualmente: {e}")
+
+    conn.commit()
+    print(f"✅ Setup inicial concluído. {sucessos} produtos inseridos na base.")
+    logging.info(f"Sucesso: {sucessos} produtos manuais inseridos.")
+    cursor.close()
+    conn.close()

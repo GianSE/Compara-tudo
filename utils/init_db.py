@@ -1,6 +1,6 @@
 # init_db.py
 import mariadb as mdb
-from config import DB_CONFIG
+# from config import DB_CONFIG
 import os
 import re
 import sys
@@ -88,8 +88,8 @@ def inicializar_banco():
             print(f"  - {f}")
         
         # --- 2. Conectar ao banco ---
-        print("\nConectando ao banco de dados 'dbDrogamais'...")
-        conn = mdb.connect(**DB_CONFIG, database="dbDrogamais")
+        print("\nConectando ao banco de dados ...")
+        conn = mdb.connect(**DB_CONFIG)
         cursor = conn.cursor()
         
         print("\n--- Iniciando execução das migrações ---")

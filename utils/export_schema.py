@@ -99,7 +99,7 @@ def exportar_schema():
     print(f"Salvando arquivos de schema em: '{OUTPUT_DIR}/'")
     
     try:
-        conn = mdb.connect(**DB_CONFIG, database=DB_CONFIG.get('database', 'dbDrogamais'))
+        conn = mdb.connect(**DB_CONFIG, database=DB_CONFIG.get('database'))
         cursor = conn.cursor()
         
         # --- 1. EXPORTAR TABELAS ---

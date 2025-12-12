@@ -2,9 +2,9 @@ DB_CONFIG = {
     "user":"seu_usuario",
     "password":"sua_senha",
     "host":"seu_host",
-    "port":seu_port
+    "port":seu_port,
+    "database":"seu_banco"
 }
 
-GOOGLE_API_KEY = "key_google"
 TELEGRAM_TOKEN = "token_telegram"
 TELEGRAM_CHAT_ID = "id_telegram"
