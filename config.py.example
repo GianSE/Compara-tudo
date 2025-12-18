@@ -1,10 +1,13 @@
+import os
+
+# Tenta ler do ambiente (GitHub/Docker) ou usa o padrão local
 DB_CONFIG = {
-    "user":"seu_usuario",
-    "password":"sua_senha",
-    "host":"seu_host",
-    "port":seu_port,
-    "database":"seu_banco"
+    "user": os.getenv("DB_USER", "seu_usuario_local"),
+    "password": os.getenv("DB_PASSWORD", "sua_senha_local"),
+    "host": os.getenv("DB_HOST", "seu_host_nuvem"),
+    "port": int(os.getenv("DB_PORT", 3306)),
+    "database": os.getenv("DB_NAME", "dbDrogamais")
 }
 
-TELEGRAM_TOKEN = "token_telegram"
-TELEGRAM_CHAT_ID = "id_telegram"
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "seu_token_local")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "seu_id_local")

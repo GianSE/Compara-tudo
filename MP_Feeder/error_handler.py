@@ -9,7 +9,7 @@ from MP_Feeder.etl_utils import finalizar_indice # Precisamos disso para o handl
 
 def save_partial_data(Notas_geral, Lojas_SC_geral, indice_para_salvar):
     """
-    Salva os DataFrames e o índice em arquivos CSV locais.
+    Salva os DataFrames e o índice em arquivos CSV locais em caso de falha no banco.
     """
     arquivo_notas_parciais = "notas_parciais.csv"
     arquivo_lojas_parciais = "lojas_parciais.csv"
@@ -35,7 +35,7 @@ def save_partial_data(Notas_geral, Lojas_SC_geral, indice_para_salvar):
 
 def handle_execution_error(e, Notas_geral, Lojas_SC_geral, indice_para_salvar, now_gmt3, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID):
     """
-    Handler principal de erros. Decide se salva CSVs e notifica.
+    Handler principal de erros. Decide se salva CSVs e notifica o Telegram.
     """
     print(f"❌ Erro na execução: {e}")
     logging.error(f"❌ Erro na execução: {e}", exc_info=True) 
@@ -48,7 +48,7 @@ def handle_execution_error(e, Notas_geral, Lojas_SC_geral, indice_para_salvar, n
     
     # Envia notificação de erro (exceto se for o erro de 'circuit break' que já notifica)
     if "LIMITE DE ERROS CONSECUTIVOS" not in str(e):
-        msg_erro = f"{now_gmt3.strftime('%Y-%m-%d %H:%M:%S')} - ❌ Erro ao atualizar o MENOR PREÇO = {e}"
+        msg_erro = f"{now_gmt3.strftime('%Y-%m-%d %H:%M:%S')} - ❌ Erro no COMPARADOR (Londrina/Cornélio) = {e}"
         mandarMSG(msg_erro, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID)
     
     exit() # Termina o script em caso de falha
@@ -60,15 +60,15 @@ def handle_api_fail(indice_para_salvar):
     arquivo_indice = "ultimo_indice.txt"
     with open(arquivo_indice, "w") as f:
         f.write(str(indice_para_salvar))
-    print(f"##### ⚠️ RUN PARCIAL (API). ÍNDICE SALVO EM: {indice_para_salvar}. REINICIANDO... #####")
-    logging.warning(f"##### ⚠️ RUN PARCIAL (API). ÍNDICE SALVO EM: {indice_para_salvar}. REINICIANDO... #####")
+    print(f"##### ⚠️ RUN PARCIAL (API). ÍNDICE SALVO EM: {indice_para_salvar}. #####")
+    logging.warning(f"##### ⚠️ RUN PARCIAL (API). ÍNDICE SALVO EM: {indice_para_salvar}. #####")
 
 def handle_success(arquivo_indice, now_gmt3, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID):
     """
     Limpa o índice e envia notificação de sucesso.
     """
     finalizar_indice(arquivo_indice) # Vem do etl_utils
-    print("##### ✅ MP Feeder CONCLUÍDO COM SUCESSO (LOTE ATUAL) #####")
-    logging.info("##### ✅ MP Feeder CONCLUÍDO COM SUCESSO (LOTE ATUAL) #####")
-    msg = f"{now_gmt3.strftime('%Y-%m-%d %H:%M:%S')} - ✅ Atualização do MENOR PREÇO realizada com sucesso!"
+    print("##### ✅ ATUALIZAÇÃO CONCLUÍDA COM SUCESSO (Londrina e Cornélio) #####")
+    logging.info("##### ✅ ATUALIZAÇÃO CONCLUÍDA COM SUCESSO #####")
+    msg = f"{now_gmt3.strftime('%Y-%m-%d %H:%M:%S')} - ✅ Comparador de Preços (Londrina/Cornélio) atualizado com sucesso!"
     mandarMSG(msg, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID) # Vem do api_services

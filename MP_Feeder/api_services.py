@@ -10,10 +10,9 @@ import concurrent.futures
 def buscar_notas(Consultas, Lojas, ultimo_indice, arquivo_indice, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID):
     """
     Busca as notas fiscais na API do Menor Preço.
-    Agora recebe os tokens do Telegram para poder notificar em caso de erro.
     """
-    print("##### COLETANDO NOTAS #####")
-    logging.info("##### COLETANDO NOTAS #####")
+    print(f"##### COLETANDO NOTAS (Iniciando do índice {ultimo_indice}) #####")
+    logging.info(f"##### COLETANDO NOTAS (Iniciando do índice {ultimo_indice}) #####")
 
     url = "https://menorpreco.notaparana.pr.gov.br/api/v1/produtos"
     notas = []
@@ -26,26 +25,26 @@ def buscar_notas(Consultas, Lojas, ultimo_indice, arquivo_indice, TELEGRAM_TOKEN
     indice_salvar = ultimo_indice
 
     if Consultas.empty:
-        print("##### NENHUMA CONSULTA PARA REALIZAR. PULANDO A COLETA DE NOTAS. #####")
-        logging.warning("##### NENHUMA CONSULTA PARA REALIZAR. PULANDO A COLETA DE NOTAS. #####")
+        print("##### NENHUMA CONSULTA PARA REALIZAR. #####")
         return pd.DataFrame(), pd.DataFrame(), run_completo, indice_salvar
 
-    Consultas = Consultas[Consultas["index"] >= ultimo_indice]
+    # Filtra apenas o que falta processar
+    Consultas_restantes = Consultas[Consultas["index"] >= ultimo_indice]
     lojas_cadastradas = set(Lojas["id_loja"])
     
-    total_consultas = len(Consultas)
+    total_consultas = len(Consultas_restantes)
     if total_consultas == 0:
-        print("##### NENHUMA CONSULTA RESTANTE A PARTIR DO ÍNDICE RECUPERADO. #####")
-        logging.warning("##### NENHUMA CONSULTA RESTANTE A PARTIR DO ÍNDICE RECUPERADO. #####")
+        print("##### NENHUMA CONSULTA RESTANTE. #####")
         return pd.DataFrame(), pd.DataFrame(), run_completo, indice_salvar
 
-    for i, (_, row) in enumerate(Consultas.iterrows(), start=1):
+    for i, (_, row) in enumerate(Consultas_restantes.iterrows(), start=1):
         hash_local = row["geohash"]
-        ean = row["gtin"]
+        ean = str(row["gtin"]) # Garante que o GTIN da consulta é string
         indice_atual = row['index'] 
 
         try:
             time.sleep(0.3)
+            # Raio de 20km para cobrir bem as regiões de Londrina e Cornélio
             params = { "gtin": ean, "local": hash_local, "raio": "20" }
             
             response = requests.get(url, params=params, timeout=20) 
@@ -54,18 +53,18 @@ def buscar_notas(Consultas, Lojas, ultimo_indice, arquivo_indice, TELEGRAM_TOKEN
             if status_code == 200:
                 erros_consecutivos = 0
                 data = response.json()
-
                 produtos_encontrados = data.get("produtos", [])
                 num_produtos = len(produtos_encontrados)
 
                 for produto in produtos_encontrados:
+                    # SALVANDO NOTAS: Mantendo o GTIN original retornado pela API
                     notas.append(
                         {
                             "id_nota": produto.get("id"),
                             "datahora": produto.get("datahora"),
                             "id_loja": produto.get("estabelecimento", {}).get("codigo"),
                             "geohash": hash_local,
-                            "gtin": produto.get("gtin"),
+                            "gtin": str(produto.get("gtin")), # String pura, sem zfill
                             "descricao": produto.get("desc"),
                             "valor_desconto": produto.get("valor_desconto"),
                             "valor_tabela": produto.get("valor_tabela"),
@@ -73,6 +72,7 @@ def buscar_notas(Consultas, Lojas, ultimo_indice, arquivo_indice, TELEGRAM_TOKEN
                             "cidade": produto.get("estabelecimento", {}).get("mun", ""),
                         }
                     )
+                    
                     id_loja = produto.get("estabelecimento", {}).get("codigo")
                     if id_loja not in lojas_cadastradas:
                         logradouro = (
@@ -92,57 +92,32 @@ def buscar_notas(Consultas, Lojas, ultimo_indice, arquivo_indice, TELEGRAM_TOKEN
                             }
                         )
                 
-                print(f"{i}/{total_consultas} (Índice: {indice_atual}) - {ean} - 200 (Encontrados: {num_produtos})")
-                logging.info(f"{i}/{total_consultas} (Índice: {indice_atual}) - {ean} - 200 - Encontrados: {num_produtos}")
-                
+                print(f"{i}/{total_consultas} (Índice: {indice_atual}) - GTIN: {ean} - Região: {hash_local} - Encontrados: {num_produtos}")
                 indice_salvar = indice_atual + 1
 
             elif status_code == 204:
                 erros_consecutivos = 0
-                print(f"{i}/{total_consultas} (Índice: {indice_atual}) - {ean} - 204 (Sem dados)")
-                logging.info(f"{i}/{total_consultas} (Índice: {indice_atual}) - {ean} - 204 - Sem dados")
+                print(f"{i}/{total_consultas} (Índice: {indice_atual}) - GTIN: {ean} - Sem dados na região {hash_local}")
                 indice_salvar = indice_atual + 1
 
             elif status_code in (404, 401, 403):
-                msg_erro = f"❌ ERRO GRAVE {status_code}: API Menor Preço pode estar offline ou URL errada. Script interrompido."
-                logging.critical(msg_erro)
-                mandarMSG(msg_erro, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID) # <-- CORREÇÃO
-                raise Exception(f"ERRO FATAL {status_code}. Abortando.")
+                msg_erro = f"❌ ERRO GRAVE {status_code}: API Menor Preço inacessível."
+                mandarMSG(msg_erro, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID)
+                raise Exception(f"ERRO FATAL {status_code}")
             
-            elif 400 <= status_code < 500:
-                print(f"❌ Erro de CLIENTE ({status_code}) para GTIN {ean}. PULANDO...")
-                logging.warning(f"{i}/{total_consultas} (Índice: {indice_atual}) - {ean} - {status_code} - Erro de cliente. Pulando.")
-                indice_salvar = indice_atual + 1
-            
-            elif 500 <= status_code < 600:
-                raise Exception(f"⚠️ Erro no servidor ({status_code})")
             else:
-                raise Exception(f"⚠️ Status code inesperado ({status_code}) para {ean}")
+                indice_salvar = indice_atual + 1
 
         except Exception as e:
-            if "ERRO FATAL" in str(e):
-                raise e
-
-            print(f"❌ Erro na requisição para GTIN {ean} e geohash {hash_local}: {e}. PULANDO...")
-            logging.error(f"Erro na requisição para GTIN {ean} e geohash {hash_local}: {e}. PULANDO...")
-            
+            if "ERRO FATAL" in str(e): raise e
             erros_consecutivos += 1
-            
             if erros_consecutivos >= LIMITE_ERROS_CONSECUTIVOS:
-                print(f"❌ LIMITE DE {LIMITE_ERROS_CONSECUTIVOS} ERROS CONSECUTIVOS ATINGIDO.")
-                logging.critical(f"LIMITE DE {LIMITE_ERROS_CONSECUTIVOS} ERROS CONSECUTIVOS ATINGIDO. INTERROMPENDO O LOOP.")
-                
-                msg_erro = f"❌ ERRO GRAVE: {LIMITE_ERROS_CONSECUTIVOS} erros consecutivos no Menor Preço. Loop interrompido. Salvando dados parciais..."
-                mandarMSG(msg_erro, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID) # <-- CORREÇÃO
-                
                 run_completo = False 
                 break 
-            
             continue 
     
-    print("##### PREPARANDO DADOS COLETADOS PARA SAÍDA... #####")
+    print("##### PREPARANDO DADOS PARA CARGA... #####")
     Notas_df, Lojas_SC_df = _preparar_saida(notas, lojas_sem_cadastro)
-    
     return Notas_df, Lojas_SC_df, run_completo, indice_salvar
 
 

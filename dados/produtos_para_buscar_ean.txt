@@ -1,0 +1,101 @@
+ARROZ
+Arroz Tio João Tipo 1 1kg
+Arroz Camil Tipo 1 1kg
+Arroz Prato Fino Tipo 1 1kg
+Arroz Urbano Tipo 1 1kg
+
+FEIJÃO
+Feijão Carioca Camil 1kg
+Feijão Carioca Kicaldo 1kg
+Feijão Preto Camil 1kg
+Feijão Preto Urbano 1kg
+
+MACARRÃO
+Macarrão Espaguete Renata 500g
+Macarrão Espaguete Adria 500g
+Macarrão Parafuso Barilla 500g
+Macarrão Penne Renata 500g
+
+MIOJO
+Miojo Nissin Lámen Galinha Caipira 85g
+Miojo Nissin Lámen Carne 85g
+Miojo Turma da Mônica Tomate 85g
+
+AÇÚCAR
+Açúcar Refinado União 1kg
+Açúcar Cristal Caravelas 1kg
+
+CAFÉ
+Café Torrado e Moído Pilão 500g
+Café Torrado e Moído Melitta 500g
+Café Torrado e Moído 3 Corações 500g
+
+BISCOITOS
+Biscoito Recheado Trakinas Chocolate 126g
+Biscoito Recheado Passatempo Chocolate 130g
+Biscoito Cream Cracker Piraquê 200g
+Biscoito Maisena Marilan 400g
+
+ACHOCOLATADO
+Achocolatado em Pó Nescau 400g
+Achocolatado em Pó Toddy 400g
+
+CERVEJA
+Cerveja Skol Pilsen Lata 350ml
+Cerveja Brahma Chopp Lata 350ml
+Cerveja Antarctica Original Garrafa 600ml
+Cerveja Heineken Long Neck 330ml
+
+REFRIGERANTE
+Refrigerante Coca-Cola PET 2L
+Refrigerante Guaraná Antarctica PET 2L
+Refrigerante Pepsi PET 2L
+Refrigerante Fanta Laranja PET 2L
+
+MEDICAMENTOS
+Paracetamol 750mg EMS 20 comprimidos
+Dipirona Sódica 500mg Neo Química 20 comprimidos
+Ibuprofeno 600mg Medley 20 comprimidos
+Nimesulida 100mg EMS 12 comprimidos
+Eno Tradicional 5g
+Buscopan Composto 20 comprimidos
+
+OVOS
+Ovos Brancos Mantiqueira Grande 12 unidades
+Ovos Vermelhos Mantiqueira Grande 12 unidades
+
+CARNES
+Filé de Frango Sadia Congelado 1kg
+Filé de Frango Perdigão Congelado 1kg
+Carne Moída Bovina Friboi 500g
+Carne Moída Bovina Swift 500g
+
+MARGARINA
+Margarina Qualy Tradicional 500g
+Margarina Delícia Cremosa 500g
+
+PÃO DE FORMA
+Pão de Forma Wickbold Tradicional 500g
+Pão de Forma Pullman Tradicional 500g
+
+MORTADELA
+Mortadela Perdigão Ouro Fatiada 200g
+Mortadela Sadia Bologna Fatiada 200g
+
+SHAMPOO
+Shampoo Elseve Hydra Detox 48h 400ml
+Shampoo Elseve Reparação Total 5 400ml
+Shampoo Widi Care Juba Cachos 500ml
+Shampoo Widi Care Curvas Mágicas 500ml
+Shampoo TRESemmé Reconstrução e Força 400ml
+Shampoo TRESemmé Blindagem Platinum 400ml
+Shampoo Dabelle Cachos da Onda 400ml
+Shampoo Dabelle Liso Arrasador 400ml
+
+ESMALTES
+Esmalte Impala Vermelho Clássico 7,5ml
+Esmalte Impala Nude Clássico 7,5ml
+Esmalte Impala Preto 7,5ml
+Esmalte Risqué Gabriela 8ml
+Esmalte Risqué Renda 8ml
+Esmalte Risqué Rebu 8ml
