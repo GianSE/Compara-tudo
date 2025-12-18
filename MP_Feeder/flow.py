@@ -76,7 +76,7 @@ def run_normal_flow(configs, now_gmt3, today_gmt3):
     # 1. Coleta os Geohashs fixos (Londrina/Cornélio) definidos no db_manager
     Geohashs = pegar_geohashs_BD(DB_CONFIG) 
     
-    # 2. Coleta os 54 GTINs da tabela bronze_menorpreco_produtos
+    # 2. Coleta os 54 GTINs da tabela bronze_bluesoft_produtos
     EANs = coletar_produtos_no_banco(DB_CONFIG) 
     
     # 3. Gera as consultas (Geohash x GTIN)

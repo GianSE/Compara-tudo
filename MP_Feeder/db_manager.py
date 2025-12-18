@@ -21,7 +21,7 @@ def pegar_ultima_att_gtins(DB_CONFIG):
 
     conn = _conectar_db(DB_CONFIG)
     cursor = conn.cursor()
-    sql = "SELECT MAX(data_insercao) FROM bronze_menorPreco_produtos"
+    sql = "SELECT MAX(data_insercao) FROM bronze_bluesoft_produtos"
     
     cursor.execute(sql)
     resultado = cursor.fetchone()
@@ -57,7 +57,7 @@ def insert_produtos_atualizados(DB_CONFIG, produtos_df):
     agora = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     sql = """
-        INSERT INTO bronze_menorPreco_produtos 
+        INSERT INTO bronze_bluesoft_produtos 
         (gtin, id_produto, descricao, fabricante, apresentacao, tipo, data_insercao)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
     """
@@ -89,7 +89,7 @@ def coletar_produtos_no_banco(DB_CONFIG):
     print("##### COLETANDO OS 54 PRODUTOS DEFINIDOS #####")
     conn = _conectar_db(DB_CONFIG)
     cursor = conn.cursor()
-    sql = "SELECT DISTINCT gtin FROM bronze_menorpreco_produtos"
+    sql = "SELECT DISTINCT gtin FROM bronze_bluesoft_produtos"
     cursor.execute(sql)
     gtins = cursor.fetchall()
     cursor.close()
@@ -179,7 +179,7 @@ def insert_produtos_manuais(DB_CONFIG, produtos_list: list):
     agora = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     sql = """
-        INSERT INTO bronze_menorPreco_produtos 
+        INSERT INTO bronze_bluesoft_produtos 
         (gtin, id_produto, descricao, fabricante, apresentacao, tipo, data_insercao)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
     """
