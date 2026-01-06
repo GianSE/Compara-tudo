@@ -4,11 +4,14 @@ import pandas as pd
 import logging
 import time
 from datetime import datetime, date
+import duckdb
+import os
 
 # --- FUNÇÃO DE CONEXÃO AUXILIAR ---
-def _conectar_db(DB_CONFIG):
-    """Função auxiliar interna para abrir conexão com o DB correto."""
-    return mdb.connect(**DB_CONFIG)
+def _conectar_db(DB_CONFIG=None):
+    token = os.getenv("MOTHERDUCK_TOKEN")
+    # md: é o prefixo para conectar à nuvem do MotherDuck
+    return duckdb.connect(f"md:db_compara_tudo?motherduck_token={token}")
 
 # ============================================
 # SEÇÃO DE PRODUTOS
